@@ -38,4 +38,115 @@ public:
     virtual bool select(const std::string& s) const = 0;
 };
 
+class Select_Contains: public Select
+{
+protected:
+    const Spreadsheet* userSpSheet;
+    int column;
+    std::string userName;
+public:
+    Select_Contains(const Spreadsheet* sheet, const std::string& colName, const std::string& name)
+    {
+	column = sheet->get_column_by_name(colName);
+	userName = name;
+	userSpSheet = sheet;
+    }
+    virtual bool select(const Spreadsheet* sheet, int row) const
+    {
+	std::string sheetStr = sheet->cell_data(row, column);
+	if(sheetStr.find(userName) != std::string::npos)
+	{
+	    return true;
+	}
+	else
+	{
+	    return false;
+	}
+    }
+};
+
+class Select_Not: public Select
+{
+protected:
+    const Select* select1;
+public:
+    Select_Not(const Select* sel1)
+    {
+	select1 = sel1;
+    }
+    ~Select_Not()
+    {
+	delete select1;
+    }
+    virtual bool select(const Spreadsheet* sheet, int row) const
+    {
+	if(select1->select(sheet, row) == true)
+	{
+	    return false;
+	}
+	else
+	{
+	    return true;
+	}
+    }
+};
+
+class Select_And: public Select
+{
+protected:
+    const Select* select1;
+    const Select* select2;
+public:
+    Select_And(const Select* sel1, const Select* sel2)
+    {
+	select1 = sel1;
+	select2 = sel2;
+    }
+    ~Select_And()
+    {
+	delete select1;
+	delete select2;
+    }
+    virtual bool select(const Spreadsheet* sheet, int row) const
+    {
+        if((select1->select(sheet, row) == true) && (select2->select(sheet, row) == true))
+        {
+	    return true;
+        }
+        else
+        {
+	    return false;
+        }
+    }
+};
+
+class Select_Or: public Select
+{
+protected:
+    const Select* select1;
+    const Select* select2;
+public:
+    Select_Or(const Select* sel1, const Select* sel2)
+    {
+	select1 = sel1;
+	select2 = sel2;
+    }
+    ~Select_Or()
+    {
+	delete select1;
+	delete select2;
+    }
+    virtual bool select(const Spreadsheet* sheet, int row) const
+    {
+	if((select1->select(sheet, row) == true) || (select2->select(sheet, row) == true))
+	{
+	    return true;
+	}
+	else
+	{
+	    return false;
+	}
+    }
+};
+
 #endif //__SELECT_HPP__
