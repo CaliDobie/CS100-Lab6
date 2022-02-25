@@ -118,7 +118,7 @@ TEST(ORTest, NotFound){
     sheet.add_row({"apple"});
     sheet.add_row({"fries"});
     sheet.add_row({"pizza"});
-    sheet.set_selection(new Select_Or(new Select_Contains(&sheet, "Food", "q"), new Select_Contains(&sheet, "Food", "r")));
+    sheet.set_selection(new Select_Or(new Select_Contains(&sheet, "Food", "q"), new Select_Contains(&sheet, "Food", "b")));
     std::stringstream ss;
     sheet.print_selection(ss);
     std::string test = ss.str();
