@@ -24,6 +24,16 @@ TEST(SelectContainsTest, AppleSubstring)
     EXPECT_EQ(test, "apple \napples \nsnapple \n");
 }
 
+TEST(SelectContainsTest, EmptySheet)
+{
+    Spreadsheet sheet;
+    sheet.set_selection(new Select_Contains(&sheet, "Food", "apple"));
+    std::stringstream ss;
+    sheet.print_selection(ss);
+    std::string test = ss.str();
+    EXPECT_EQ(test, "");
+}
+
 TEST(NOTTest, notS)
 {
     Spreadsheet sheet;
@@ -54,6 +64,22 @@ TEST(ANDTest, IandE)
     EXPECT_EQ(test, "pie \nfries \n");
 }
 
+TEST(ANDTest, OnlyOne)
+{
+    Spreadsheet sheet;
+    sheet.set_column_names({"Food"});
+    sheet.add_row({"pie"});
+    sheet.add_row({"apple"});
+    sheet.add_row({"fries"});
+    sheet.add_row({"pizza"});
+    sheet.set_selection(new Select_And(new Select_Contains(&sheet, "Food", "i"), new Select_Contains(&sheet, "Food", "q")));
+    std::stringstream ss;
+    sheet.print_selection(ss);
+    std::string test = ss.str();
+    EXPECT_EQ(test, "");
+}
+
+
 TEST(ORTest, IorE)
 {
     Spreadsheet sheet;
@@ -69,4 +95,33 @@ TEST(ORTest, IorE)
     EXPECT_EQ(test, "pie \napple \nfries \npizza \n");
 }
 
+TEST(ORTest, CaseTest){
+
+    Spreadsheet sheet;
+    sheet.set_column_names({"Food"});
+    sheet.add_row({"pie"});
+    sheet.add_row({"apple"});
+    sheet.add_row({"fries"});
+    sheet.add_row({"pizza"});
+    sheet.set_selection(new Select_Or(new Select_Contains(&sheet, "Food", "I"), new Select_Contains(&sheet, "Food", "E")));
+    std::stringstream ss;
+    sheet.print_selection(ss);
+    std::string test = ss.str();
+    EXPECT_EQ(test, "");
+}
+
+TEST(ORTest, NotFound){
+
+    Spreadsheet sheet;
+    sheet.set_column_names({"Food"});
+    sheet.add_row({"pie"});
+    sheet.add_row({"apple"});
+    sheet.add_row({"fries"});
+    sheet.add_row({"pizza"});
+    sheet.set_selection(new Select_Or(new Select_Contains(&sheet, "Food", "q"), new Select_Contains(&sheet, "Food", "r")));
+    std::stringstream ss;
+    sheet.print_selection(ss);
+    std::string test = ss.str();
+    EXPECT_EQ(test, "");
+}
 #endif //__UNIT_TEST_HPP__
