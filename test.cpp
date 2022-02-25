@@ -1,5 +1,7 @@
 #include "spreadsheet.hpp"
 
+#include "unit_test.hpp"
+
 #include "gtest/gtest.h"
 
 
